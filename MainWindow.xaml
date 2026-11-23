@@ -1,0 +1,203 @@
+<Window x:Class="NumenX.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NumenX" Width="1120" Height="740" MinWidth="920" MinHeight="640"
+        Icon="Assets/numenx.ico"
+        Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
+        FontFamily="Segoe UI Variable Display, Segoe UI"
+        WindowStartupLocation="CenterScreen">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="236"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+
+    <!-- ============ NAVIGATION ============ -->
+    <Border Background="{StaticResource Panel}" Padding="18">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,6,0,30">
+          <Image Source="Assets/logo.png" Width="40" Height="40"/>
+          <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+            <TextBlock Text="NumenX" FontSize="21" FontWeight="Bold"/>
+            <TextBlock Text="Create. Capture. Stream." FontSize="10" Foreground="{StaticResource Muted}"/>
+          </StackPanel>
+        </StackPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="HotkeyHint" Style="{StaticResource Label}"
+                   Text="Hotkey: Ctrl + Shift + R" Margin="6,0,0,4"/>
+        <StackPanel>
+          <RadioButton x:Name="NavHome" GroupName="nav" Tag="Home" Content="Home" IsChecked="True"
+                       Style="{StaticResource NavBtn}" Checked="Nav_Checked"/>
+          <RadioButton x:Name="NavLib" GroupName="nav" Tag="Library" Content="My Recordings"
+                       Style="{StaticResource NavBtn}" Checked="Nav_Checked"/>
+          <RadioButton x:Name="NavSet" GroupName="nav" Tag="Settings" Content="Settings"
+                       Style="{StaticResource NavBtn}" Checked="Nav_Checked"/>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- ============ PAGES ============ -->
+    <Grid Grid.Column="1">
+
+      <!-- HOME -->
+      <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,30,36,30">
+          <TextBlock x:Name="StatusText" Text="Starting up..." FontSize="26" FontWeight="Bold"/>
+          <TextBlock x:Name="SubStatusText" Style="{StaticResource Label}" FontSize="13" Margin="0,4,0,22"
+                     Text="Detecting your hardware..."/>
+
+          <Button x:Name="RecordBtn" Style="{StaticResource PrimaryBtn}" Height="130" Margin="0,0,0,14"
+                  IsEnabled="False" Click="RecordBtn_Click">
+            <StackPanel>
+              <TextBlock x:Name="RecordBtnText" Text="●  RECORD" FontSize="34" FontWeight="Bold" HorizontalAlignment="Center"/>
+              <TextBlock x:Name="RecordTimer" Text="Full desktop" FontSize="14" Opacity="0.85" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            </StackPanel>
+          </Button>
+
+          <Grid Margin="0,0,0,22">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/><ColumnDefinition Width="12"/>
+              <ColumnDefinition Width="*"/><ColumnDefinition Width="12"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Style="{StaticResource Btn}" Height="78" IsEnabled="False" ToolTip="Planned for Stage 4">
+              <StackPanel><TextBlock Text="STREAM" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Not built yet (Stage 4)" Style="{StaticResource Label}" HorizontalAlignment="Center"/></StackPanel>
+            </Button>
+            <Button Grid.Column="2" Style="{StaticResource Btn}" Height="78" IsEnabled="False" ToolTip="Planned for Stage 5">
+              <StackPanel><TextBlock Text="INSTANT REPLAY" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Not built yet (Stage 5)" Style="{StaticResource Label}" HorizontalAlignment="Center"/></StackPanel>
+            </Button>
+            <Button Grid.Column="4" Style="{StaticResource Btn}" Height="78" Click="GoLibrary_Click">
+              <StackPanel><TextBlock Text="MY RECORDINGS" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="RecCountText" Text="Open your library" Style="{StaticResource Label}" HorizontalAlignment="Center"/></StackPanel>
+            </Button>
+          </Grid>
+
+          <TextBlock Text="Live system status" Style="{StaticResource Section}" Margin="0,0,0,10"/>
+          <WrapPanel>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="CPU" Style="{StaticResource Label}"/><TextBlock x:Name="CpuText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="RAM" Style="{StaticResource Label}"/><TextBlock x:Name="RamText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="GPU" Style="{StaticResource Label}"/><TextBlock x:Name="GpuText" FontSize="20" FontWeight="SemiBold" Text="Not measured"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="Free disk space" Style="{StaticResource Label}"/><TextBlock x:Name="DiskText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="Resolution" Style="{StaticResource Label}"/><TextBlock x:Name="ResText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="Frame rate" Style="{StaticResource Label}"/><TextBlock x:Name="FpsText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="Encoder" Style="{StaticResource Label}"/><TextBlock x:Name="EncText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+            <Border Style="{StaticResource CardBox}" Width="196"><StackPanel>
+              <TextBlock Text="NumenX memory" Style="{StaticResource Label}"/><TextBlock x:Name="AppMemText" FontSize="20" FontWeight="SemiBold" Text="-"/></StackPanel></Border>
+          </WrapPanel>
+
+          <TextBlock Text="Recent recordings" Style="{StaticResource Section}"/>
+          <ListBox x:Name="RecentList" Style="{StaticResource DarkList}" MaxHeight="230"
+                   MouseDoubleClick="List_DoubleClick">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel>
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding Info}" Style="{StaticResource Label}"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- LIBRARY -->
+      <Grid x:Name="LibraryPage" Visibility="Collapsed" Margin="36,30,36,30">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="My Recordings" FontSize="26" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16,0,16">
+          <Button Content="Play" Style="{StaticResource PrimaryBtn}" Click="LibPlay_Click" Margin="0,0,10,0"/>
+          <Button Content="Show in folder" Style="{StaticResource Btn}" Click="LibShow_Click" Margin="0,0,10,0"/>
+          <Button Content="Delete" Style="{StaticResource Btn}" Click="LibDelete_Click" Margin="0,0,10,0"/>
+          <Button Content="Refresh" Style="{StaticResource Btn}" Click="LibRefresh_Click"/>
+        </StackPanel>
+        <ListBox Grid.Row="2" x:Name="LibList" Style="{StaticResource DarkList}" MouseDoubleClick="List_DoubleClick">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding Info}" Style="{StaticResource Label}"/>
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+
+      <!-- SETTINGS -->
+      <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,30,36,40" MaxWidth="760" HorizontalAlignment="Left">
+          <TextBlock Text="Settings" FontSize="26" FontWeight="Bold"/>
+          <TextBlock Text="Changes are saved automatically." Style="{StaticResource Label}" Margin="0,4,0,0"/>
+
+          <Button Content="Smart Optimize (basic)" Style="{StaticResource PrimaryBtn}" HorizontalAlignment="Left"
+                  Margin="0,18,0,0" Click="Smart_Click"
+                  ToolTip="Picks resolution, FPS and quality from your detected encoder and screen."/>
+
+          <TextBlock Text="Resolution" Style="{StaticResource Section}"/>
+          <WrapPanel>
+            <RadioButton GroupName="res" Tag="720p" Content="720p" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="res" Tag="1080p" Content="1080p" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="res" Tag="1440p" Content="1440p" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="res" Tag="2160p" Content="4K" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="res" Tag="Native" Content="Screen size" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+          </WrapPanel>
+
+          <TextBlock Text="Frame rate" Style="{StaticResource Section}"/>
+          <WrapPanel>
+            <RadioButton GroupName="fps" Tag="30" Content="30 FPS" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="fps" Tag="60" Content="60 FPS" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+          </WrapPanel>
+
+          <TextBlock Text="Quality preset" Style="{StaticResource Section}"/>
+          <WrapPanel>
+            <RadioButton GroupName="quality" Tag="Performance" Content="Performance" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="quality" Tag="Balanced" Content="Balanced" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+            <RadioButton GroupName="quality" Tag="Maximum" Content="Maximum quality" Style="{StaticResource PillRadio}" Checked="Choice_Checked"/>
+          </WrapPanel>
+
+          <TextBlock Text="Encoder" Style="{StaticResource Section}"/>
+          <WrapPanel x:Name="EncoderPanel"/>
+
+          <TextBlock Text="Microphone" Style="{StaticResource Section}"/>
+          <ListBox x:Name="MicList" Style="{StaticResource DarkList}" MaxHeight="130" SelectionChanged="Mic_Changed"/>
+
+          <TextBlock Text="Desktop audio" Style="{StaticResource Section}"/>
+          <TextBlock Style="{StaticResource Label}" TextWrapping="Wrap" Margin="0,-4,0,8"
+                     Text="Windows needs a loopback device for this, e.g. 'Stereo Mix' (enable it in Sound settings) or VB-Cable."/>
+          <ListBox x:Name="DeskList" Style="{StaticResource DarkList}" MaxHeight="130" SelectionChanged="Desk_Changed"/>
+
+          <TextBlock Text="Save recordings to" Style="{StaticResource Section}"/>
+          <DockPanel>
+            <Button DockPanel.Dock="Right" Content="Browse..." Style="{StaticResource Btn}" Click="Browse_Click" Margin="10,0,0,0"/>
+            <TextBox x:Name="FolderBox" IsReadOnly="True" Padding="12,10" FontSize="14"
+                     Background="{StaticResource Card}" Foreground="{StaticResource Text}" BorderThickness="0"/>
+          </DockPanel>
+          <CheckBox x:Name="Mp4Check" Content="Convert to MP4 when a recording finishes" Margin="0,14,0,0"
+                    Foreground="{StaticResource Text}" Checked="Mp4_Changed" Unchecked="Mp4_Changed"/>
+
+          <TextBlock Text="Accent colour" Style="{StaticResource Section}"/>
+          <StackPanel x:Name="AccentPanel" Orientation="Horizontal"/>
+
+          <TextBlock Text="Diagnostics" Style="{StaticResource Section}"/>
+          <Button Content="Open log folder" Style="{StaticResource Btn}" HorizontalAlignment="Left" Click="OpenLogs_Click"/>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <!-- Toast -->
+    <Border x:Name="Toast" Grid.ColumnSpan="2" Visibility="Collapsed" HorizontalAlignment="Center"
+            VerticalAlignment="Bottom" Margin="0,0,0,28" Background="{StaticResource Card}"
+            BorderBrush="{DynamicResource Accent}" BorderThickness="1.5" CornerRadius="14" Padding="22,14">
+      <TextBlock x:Name="ToastText" FontSize="14"/>
+    </Border>
+  </Grid>
+</Window>
