@@ -1,0 +1,46 @@
+name: Build NumenX
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish (self-contained, single file)
+        run: >
+          dotnet publish src/NumenX/NumenX.csproj -c Release -r win-x64
+          --self-contained true -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish
+
+      - name: Bundle FFmpeg
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ff
+          $exe = Get-ChildItem ff -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+          Copy-Item $exe.FullName publish\ffmpeg.exe
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\numenx.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NumenX-Installer
+          path: installer/Output/NumenX-Setup.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NumenX-Portable
+          path: publish
