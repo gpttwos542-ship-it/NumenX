@@ -15,11 +15,24 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Locate project
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Recurse -Filter NumenX.csproj | Select-Object -First 1
+          if (-not $proj) {
+            Write-Host "NumenX.csproj was NOT found. Files in the repo:"
+            Get-ChildItem -Recurse -File | Select-Object -First 80 | ForEach-Object { $_.FullName }
+            exit 1
+          }
+          $root = $proj.Directory.Parent.Parent.FullName
+          "PROJ=$($proj.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "Project: $($proj.FullName)"
+          Write-Host "Root: $root"
+
       - name: Publish (self-contained, single file)
-        run: >
-          dotnet publish src/NumenX/NumenX.csproj -c Release -r win-x64
-          --self-contained true -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish
+        shell: pwsh
+        run: dotnet publish "$env:PROJ" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o "$env:ROOT\publish"
 
       - name: Bundle FFmpeg
         shell: pwsh
@@ -27,20 +40,20 @@ jobs:
           Invoke-WebRequest https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -OutFile ffmpeg.zip
           Expand-Archive ffmpeg.zip -DestinationPath ff
           $exe = Get-ChildItem ff -Recurse -Filter ffmpeg.exe | Select-Object -First 1
-          Copy-Item $exe.FullName publish\ffmpeg.exe
+          Copy-Item $exe.FullName "$env:ROOT\publish\ffmpeg.exe"
 
       - name: Build installer
         shell: pwsh
         run: |
           choco install innosetup -y --no-progress
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\numenx.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "$env:ROOT\installer\numenx.iss"
 
       - uses: actions/upload-artifact@v4
         with:
           name: NumenX-Installer
-          path: installer/Output/NumenX-Setup.exe
+          path: ${{ env.ROOT }}/installer/Output/NumenX-Setup.exe
 
       - uses: actions/upload-artifact@v4
         with:
           name: NumenX-Portable
-          path: publish
+          path: ${{ env.ROOT }}/publish
